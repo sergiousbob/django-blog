@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+  {% block title %} {{post.title_tag}} {% endblock %}
+  {% block content %}
+
+<h1>{{post.title}}</h1>
+<small>By:
+    {{post.author.first_name}}
+    {{post.author.last_name}} -
+    {{post.post_date}}-
+
+      {% if user.is_authenticated %}
+    {% if user.id == post.author.id %}
+    <a href ="{% url 'update_post' post.pk %}"> Изменить</a>
+<a href ="{% url 'delete_post' post.pk %}">Удалить</a><br/>
+
+{% endif %}
+
+</small>
+<hr>
+<br/>
+{% if post.header_image %}
+<image src= "{{post.header_image.url}}"><br/><br/>
+    {% endif %}
+    {{post.body|safe}}
+
+
+
+<br/><br/>
+
+<a href ="{% url 'home' %}"class="btn btn-success"> Back</a>
+<br/><br/>
+<hr>
+<br/>
+
+<form action="{% url 'like_post' post.pk %}" method = "POST">
+    {% csrf_token %}
+    {% if user.is_authenticated %}
+
+    {% if liked %}
+    <button type ="submit", name="post_id", value ="{{post.id}}", class ="btn btn-danger btn-sm">UnLike</button>
+    {%  else %}
+    <button type ="submit", name="post_id", value ="{{post.id}}", class ="btn btn-primary btn-sm">Like</button>
+
+</form>
+{% endif %}
+{% endif %}
+{% else %}
+<br/>
+<br/>
+<small>Для того, чтобы поставить "нравится" нужно <a href="{% url 'login' %}">зарегистрировать в системе</a></small>
+<br/>
+{% endif %}
+-Понравилось : {{total_likes}}
+  <br/>
+    <br/>
+    <hr/>
+
+
+
+
+
+<div class="card mb-3">
+  <div class="row g-0">
+    <div class="col-md-2">
+        {% if post.author.profile.profile_pic %}
+      <img src="{{ post.author.profile.profile_pic.url}}" class="img-fluid rounded-start" width="200" height="200">
+   {% else %}
+        <img src="{% static 'theblog/images/default_pic.jpg'%}" class="img-fluid rounded-start">
+        {% endif %}
+    </div>
+    <div class="col-md-10">
+      <div class="card-body">
+        <h5 class="card-title">
+            {{post.author.first_name}}
+            {{post.author.last_name}}</h5>
+          <p class="small text-muted">
+
+                <a href ="{% url 'show_profile_page' post.author.profile.id %}">Profile Page</a>|
+
+              <a href ="{{post.author.profile.website_url }}">| website</a>
+
+
+          </p>
+            <p class="card-text">{{ post.author.profile.bio}}</p>
+
+      </div>
+    </div>
+  </div>
+</div>
+ <h4>Комментарии к записи: </h4>
+    {% if not post.comments.all %}
+    Комментарии отсуствуют пока...<a href="{% url 'add_comment' post.pk %}">Добавить</a>
+    {% else %}
+
+    <a href="{% url 'add_comment' post.pk %}">Добавьте комментарий</a>
+    <br/>
+    <br/>
+    {% for comment in post.comments.all %}
+
+    <strong>{{ comment.name}} - {{comment.date_added}}</strong>
+    <br/>
+    {{comment.body}}
+<br/><br/>
+    {% endfor %}
+    {% endif %}
+    <hr/>
+    <br/><br/>
+{% endblock %}
+   <script>/*<img src ="{{ post.author.profile.profile_pic.url}}" width="50" height="50" class="rounded-circle">/*</script>
+

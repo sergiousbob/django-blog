@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %} Удаление поста{% endblock %}
+  {% block content %}
+
+
+
+      {% if user.is_authenticated %}
+        {% if user.id == post.author.id %}
+
+<h1>Редактировать пост</h1>
+<br/> <br/>
+<h3>Удалить: {{post.title}}</h3>
+<br/>
+<div class ="form-group">
+<form method ="POST">
+    {% csrf_token %}
+    <strong> Ты уверен?!</strong><br/><br/>
+    <button class ="btn btn-secondary"> Удалить</button>
+    </form>
+
+</div>
+{% else %}
+Автор поста только может удалить
+{% endif %}
+
+{% else %}
+
+<h3>Авторизуйся в системе!!! </h3>
+{% endif %}
+
+
+    {% endblock %}
